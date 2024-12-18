@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, Float, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, Float, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
@@ -29,10 +29,12 @@ class Permission(Base):
 class UserSubscription(Base):
     __tablename__ = "user_subscriptions"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, unique=True, index=True)
-    plan_id = Column(Integer, ForeignKey("plans.id"))
+    user_id = Column(Integer, nullable=False)
+    plan_id = Column(Integer, ForeignKey("plans.id"), nullable=False)
+    start_date = Column(DateTime, default=datetime.utcnow)
+    end_date = Column(DateTime, nullable=True)
+    is_active = Column(Boolean, default=True)
     usage_count = Column(Integer, default=0)
-    created_at = Column(DateTime, default=datetime.utcnow)
     plan = relationship("Plan", back_populates="subscriptions")
 
 class UsageLog(Base):
@@ -55,7 +57,7 @@ class ServiceLog(Base):
 class PaymentLog(Base):
     __tablename__ = "payment_logs"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("subscriptions.user_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user_subscriptions.user_id"), nullable=False)
     amount = Column(Float, nullable=False)
     currency = Column(String, nullable=False)
     status = Column(String, nullable=False)

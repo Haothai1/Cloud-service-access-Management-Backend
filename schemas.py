@@ -60,11 +60,18 @@ class PaymentLogResponse(PaymentLogCreate):
         from_attributes = True
 
 class UserSubscriptionResponse(BaseModel):
+    id: int
     user_id: int
     plan_id: int
+    start_date: datetime
+    end_date: Optional[datetime] = None
+    is_active: bool
     usage_count: int
-    created_at: datetime
-    plan: Optional[PlanBase] = None
 
     class Config:
         from_attributes = True
+
+class SubscriptionUpdate(BaseModel):
+    plan_id: Optional[int] = None
+    is_active: Optional[bool] = None
+    usage_count: Optional[int] = None
